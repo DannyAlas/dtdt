@@ -61,46 +61,6 @@ class AllowedEvtypes(StrEnum):
     SCALARS = "scalars"
 
 
-@dataclass
-class BlockInfo:
-    tankpath: str
-    blockname: str
-    blockpath: str
-    start_date: str
-    utc_start_time: str
-    stop_date: str
-    utc_stop_time: str
-    duration: str
-    video_path: str
-
-
-class Block:
-    epocs: Dict[str, Any]
-    streams: Dict[str, Any]
-    info: BlockInfo
-
-
-class SampleInfo(BaseModel):
-    name: str = ""
-    start_sample: int = 0
-    hour: int = 0
-    gaps: list[Tuple[int, int]] = []
-    gap_text: str = ""
-
-
-class StreamHeader(BaseModel):
-    size_bytes: int = 0
-    file_type: str = ""
-    file_version: int = 0
-    event_name: str = ""
-    channel_num: int = 0
-    total_num_channels: int = 0
-    sample_width_bytes: int = 0
-    data_format: str = ""
-    decimate: int = 0
-    rate: int = 0
-    fs: float = 0
-
 
 class StoreType(BaseModel):
     CircType: int = 0
