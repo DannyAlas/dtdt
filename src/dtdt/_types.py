@@ -1,8 +1,7 @@
 import warnings
-from dataclasses import dataclass
 from datetime import datetime, timedelta
 from enum import Enum, IntEnum, StrEnum
-from typing import Any, Dict, List, Tuple, Union
+from typing import List, Union
 
 import numpy as np
 from pydantic import BaseModel
@@ -59,7 +58,6 @@ class AllowedEvtypes(StrEnum):
     SNIPS = "snips"
     STREAMS = "streams"
     SCALARS = "scalars"
-
 
 
 class StoreType(BaseModel):
