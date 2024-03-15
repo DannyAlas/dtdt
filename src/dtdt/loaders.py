@@ -1831,17 +1831,3 @@ def read_block(
     #                 )
 
     return data
-
-
-class TDTLoader:
-    def __init__(self, path: str):
-        super(TDTLoader, self).__init__()
-        self.path = path
-        self.max = None
-        self.block = None
-
-    def load_block(self):
-        self.block = read_block(self.path, evtype=["epocs"])
-
-    def run(self):
-        self.load_block()
