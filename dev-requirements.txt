@@ -1,0 +1,6 @@
+annotated-types==0.6.0
+numpy==1.26.4
+pydantic==2.7.0
+pydantic_core==2.18.1
+tdt==0.6.6
+typing_extensions==4.11.0
