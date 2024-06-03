@@ -5,19 +5,13 @@ requires = [
   "setuptools-scm[toml]>=6.2.3",
 ]
 
-[tool.setuptools.package-data]
-"src" = ["py.typed"]
-
-[tool.setuptools_scm]
-write_to = "src/dtdt/_version.py"
-
 [project]
 name = "dtdt"
 version = "0.0.1"
 description = "Dannys TDT - A typed implementation of the TDT API with some extra features."
 readme = "README.md"
 authors = [
-  { name="Daniel Alas", email="hi@danielalas.com" },
+  { name = "Daniel Alas", email = "hi@danielalas.com" },
 ]
 requires-python = ">=3.11"
 classifiers = [
@@ -27,26 +21,39 @@ classifiers = [
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
 ]
-[project.urls]
-Homepage = "https://github.com/DannyAlas/dtdt"
-Issues = "https://github.com/DannyAlas/dtdt/issues"
+urls.Homepage = "https://github.com/DannyAlas/dtdt"
+urls.Issues = "https://github.com/DannyAlas/dtdt/issues"
+
+[tool.setuptools.package-data]
+"src" = [
+  "py.typed",
+]
+
+[tool.setuptools_scm]
+write_to = "src/dtdt/_version.py"
 
 [tool.black]
-target-version = ['py38']
+target-version = [
+  'py38',
+]
 
 [tool.ruff]
-src = ["src"]
 line-length = 88
 
-[tool.ruff.format]
-docstring-code-format = true
+src = [
+  "src",
+]
+format.docstring-code-format = true
 
 [tool.check-wheel-contents]
-ignore = ["W006", "W009"]
+ignore = [
+  "W006",
+  "W009",
+]
 
 [tool.pytest.ini_options]
 minversion = "6.0"
 addopts = "-ra -q"
 pythonpath = [
-  "src"
+  "src",
 ]
