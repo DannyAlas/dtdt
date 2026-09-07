@@ -1,12 +1,11 @@
 import copy
-from typing import List, Tuple, Union
 
 import numpy as np
 
 from dtdt._types import TDTEpoc, TDTStream
 
 
-def get_time_ranges(epoc: TDTEpoc, values: List[int]) -> np.ndarray:
+def get_time_ranges(epoc: TDTEpoc, values: list[int]) -> np.ndarray:
     """
     Given a list of values, find the time ranges (in seconds) of the valid values in the epocs data.
 
@@ -46,10 +45,8 @@ def get_time_ranges(epoc: TDTEpoc, values: List[int]) -> np.ndarray:
 
 def modify_time_ranges(
     epoc: TDTEpoc,
-    range_filtter: Union[
-        Tuple[Union[int, float]], Tuple[Union[int, float], Union[int, float]]
-    ],
-    time_ranges: Union[np.ndarray, None] = None,
+    range_filtter: tuple[int | float] | tuple[int | float, int | float],
+    time_ranges: np.ndarray | None = None,
 ) -> np.ndarray:
     """
     Filter the time ranges with a range filter. For example, a range filter of [0.0, 0.5] modify the time ranges to be the onset + 0.0 to onset + 0.5. If the offset is not provided, the epoc offset is used.
@@ -104,7 +101,7 @@ def modify_time_ranges(
 
 def get_filtered_stream_data(
     stream: TDTStream, time_ranges: np.ndarray
-) -> List[np.ndarray]:
+) -> list[np.ndarray]:
     """
     Given a stream struct and time ranges, filter the stream data to only include the data in the time ranges.
 

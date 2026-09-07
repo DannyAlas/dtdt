@@ -21,55 +21,49 @@ def loaded_data(request: pytest.FixtureRequest):
 
 def type_check(dtdt_prop, tdt_prop):
     if isinstance(dtdt_prop, str):
-        assert (
-            dtdt_prop == tdt_prop
-        ), f"Failing Type: {type(dtdt_prop)}\ndtdt: {dtdt_prop}\nTDT: {tdt_prop}"
+        assert dtdt_prop == tdt_prop, (
+            f"Failing Type: {type(dtdt_prop)}\ndtdt: {dtdt_prop}\nTDT: {tdt_prop}"
+        )
     elif isinstance(dtdt_prop, list):
         t_arr = tdt_prop == dtdt_prop
-        assert (
-            dtdt_prop == tdt_prop
-        ), f"Failing Type: {type(dtdt_prop)}\ndtdt: {dtdt_prop}\nTDT: {tdt_prop}"
+        assert dtdt_prop == tdt_prop, (
+            f"Failing Type: {type(dtdt_prop)}\ndtdt: {dtdt_prop}\nTDT: {tdt_prop}"
+        )
     elif isinstance(dtdt_prop, dict):
-        assert all(
-            dtdt_prop.items() == tdt_prop.items()
-        ), f"Failing Type: {type(dtdt_prop)}\ndtdt: {dtdt_prop}\nTDT: {tdt_prop}"
+        assert all(dtdt_prop.items() == tdt_prop.items()), (
+            f"Failing Type: {type(dtdt_prop)}\ndtdt: {dtdt_prop}\nTDT: {tdt_prop}"
+        )
     elif isinstance(dtdt_prop, np.ndarray):
         t_arr = tdt_prop == dtdt_prop
         t_arr = t_arr.flatten()
-        assert all(
-            t_arr
-        ), f"Failing Type: {type(dtdt_prop)}\ndtdt: {dtdt_prop}\nTDT: {tdt_prop}"
+        assert all(t_arr), (
+            f"Failing Type: {type(dtdt_prop)}\ndtdt: {dtdt_prop}\nTDT: {tdt_prop}"
+        )
     elif (
-        isinstance(dtdt_prop, np.int64)
-        or isinstance(dtdt_prop, np.int32)
-        or isinstance(dtdt_prop, np.int16)
-        or isinstance(dtdt_prop, np.int8)
+        (
+            isinstance(dtdt_prop, np.int64)
+            or isinstance(dtdt_prop, np.int32)
+            or isinstance(dtdt_prop, np.int16)
+            or isinstance(dtdt_prop, np.int8)
+        )
+        or isinstance(dtdt_prop, np.float64)
+        or isinstance(dtdt_prop, np.float32)
+        or (
+            isinstance(dtdt_prop, np.uint64)
+            or isinstance(dtdt_prop, np.uint32)
+            or isinstance(dtdt_prop, np.uint16)
+            or isinstance(dtdt_prop, np.uint8)
+        )
+        or isinstance(dtdt_prop, np.bool_)
     ):
-        assert (
-            dtdt_prop == tdt_prop
-        ), f"Failing Type: {type(dtdt_prop)}\ndtdt: {dtdt_prop}\nTDT: {tdt_prop}"
-    elif isinstance(dtdt_prop, np.float64) or isinstance(dtdt_prop, np.float32):
-        assert (
-            dtdt_prop == tdt_prop
-        ), f"Failing Type: {type(dtdt_prop)}\ndtdt: {dtdt_prop}\nTDT: {tdt_prop}"
-    elif (
-        isinstance(dtdt_prop, np.uint64)
-        or isinstance(dtdt_prop, np.uint32)
-        or isinstance(dtdt_prop, np.uint16)
-        or isinstance(dtdt_prop, np.uint8)
-    ):
-        assert (
-            dtdt_prop == tdt_prop
-        ), f"Failing Type: {type(dtdt_prop)}\ndtdt: {dtdt_prop}\nTDT: {tdt_prop}"
-    elif isinstance(dtdt_prop, np.bool_):
-        assert (
-            dtdt_prop == tdt_prop
-        ), f"Failing Type: {type(dtdt_prop)}\ndtdt: {dtdt_prop}\nTDT: {tdt_prop}"
+        assert dtdt_prop == tdt_prop, (
+            f"Failing Type: {type(dtdt_prop)}\ndtdt: {dtdt_prop}\nTDT: {tdt_prop}"
+        )
     elif isinstance(dtdt_prop, DataFormatEnum):
         dtdt_prop = dtdt_prop.value
-        assert (
-            dtdt_prop == tdt_prop
-        ), f"Failing Type: {type(dtdt_prop)}\ndtdt: {dtdt_prop}\nTDT: {tdt_prop}"
+        assert dtdt_prop == tdt_prop, (
+            f"Failing Type: {type(dtdt_prop)}\ndtdt: {dtdt_prop}\nTDT: {tdt_prop}"
+        )
     else:
         raise NotImplementedError(f"Type {type(dtdt_prop)} not implemented")
 
