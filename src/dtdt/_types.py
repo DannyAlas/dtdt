@@ -1,7 +1,6 @@
 import warnings
 from datetime import datetime, timedelta
 from enum import Enum, IntEnum, StrEnum
-from typing import List, Union
 
 import numpy as np
 from pydantic import BaseModel
@@ -78,7 +77,7 @@ class StoreType(BaseModel):
 class EventHeader(BaseModel):
     name: str = ""
     type: str = ""
-    start_time: List[float] = []
+    start_time: list[float] = []
     type_str: AllowedEvtypes = AllowedEvtypes.EPOCS
     size: int = 0
 
@@ -96,16 +95,16 @@ size: {self.size}
 
 
 class TDTNote(BaseModel):
-    name: List = []
-    index: List = []
-    text: List = []
-    ts: List = []
+    name: list = []
+    index: list = []
+    text: list = []
+    ts: list = []
 
 
 class TDTDataHeader(BaseModel):
     tev_path: str = ""
-    start_time: Union[float, None] = None
-    stop_time: Union[float, None] = None
+    start_time: float | None = None
+    stop_time: float | None = None
 
 
 class Event(BaseModel):
@@ -136,7 +135,7 @@ class TDTEpoc(Event):
     buddy: str = ""
     onset: np.ndarray = np.array([])
     offset: np.ndarray = np.array([])
-    notes: List[TDTNote] = []
+    notes: list[TDTNote] = []
 
     def __repr__(self):
         super().__repr__()
@@ -185,8 +184,8 @@ chan: {self.chan}
 
 
 class TDTScalar(Event):
-    chan: List = []
-    notes: List[TDTNote] = []
+    chan: list = []
+    notes: list[TDTNote] = []
 
     def __repr__(self):
         super().__repr__()
@@ -202,10 +201,10 @@ class TDTInfo(Event):
     tankpath: str = ""
     blockname: str = ""
     start_date: datetime = datetime.now()
-    utc_start_time: Union[str, None] = None
-    stop_date: Union[datetime, None] = None
-    utc_stop_time: Union[str, None] = None
-    duration: Union[timedelta, None] = None
+    utc_start_time: str | None = None
+    stop_date: datetime | None = None
+    utc_stop_time: str | None = None
+    duration: timedelta | None = None
     stream_channel: int = 0
     snip_channel: int = 0
     experiment: str = ""
@@ -248,7 +247,7 @@ class DynamicDictAccessor(dict):
                 raise ValueError("Value must be an Event type")
             self[k] = v
 
-    def __setitem__(self, name, value: Union[TDTEpoc, TDTSnip, TDTStream, TDTScalar]):
+    def __setitem__(self, name, value: TDTEpoc | TDTSnip | TDTStream | TDTScalar):
         if not isinstance(value, Event):
             raise ValueError("Value must be an Event type")
         super().__setitem__(name, value)
@@ -277,7 +276,7 @@ class DynamicDictAccessor(dict):
 
     def __getattribute__(
         self, __name: str
-    ) -> Union[TDTEpoc, TDTSnip, TDTStream, TDTScalar]:
+    ) -> TDTEpoc | TDTSnip | TDTStream | TDTScalar:
         warnings.warn(
             "This method of accessing the data is not recommended and will be removed in the future. Please use the get_event method to access the data",
             DeprecationWarning,
@@ -285,7 +284,7 @@ class DynamicDictAccessor(dict):
         )
         return super().__getattribute__(__name)
 
-    def __setattr__(self, name, value: Union[TDTEpoc, TDTSnip, TDTStream, TDTScalar]):
+    def __setattr__(self, name, value: TDTEpoc | TDTSnip | TDTStream | TDTScalar):
         if not isinstance(value, Event):
             raise ValueError("Value must be an Event type")
         self[name] = value
@@ -463,7 +462,7 @@ class TDTData(BaseModel):
             return self.scalars[name]
         raise KeyError(f"Scalar {name} not found")
 
-    def get_event(self, name: str) -> Union[TDTEpoc, TDTSnip, TDTStream, TDTScalar]:
+    def get_event(self, name: str) -> TDTEpoc | TDTSnip | TDTStream | TDTScalar:
         """
         Get an event by name
 
