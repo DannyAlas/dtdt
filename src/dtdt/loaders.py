@@ -4,7 +4,7 @@ import os
 import re
 import warnings
 from datetime import datetime
-from typing import List, Literal, Union
+from typing import Literal
 
 import numpy as np
 
@@ -84,7 +84,7 @@ def parse_tbk(tbk_path) -> dict[str, StoreType]:
             s = tbk.read().decode("cp437")  # random encoding?
 
         # find the block notes. First, find the first and second delimiters
-        delimInd = [m.start() for m in re.finditer("\[USERNOTEDELIMITER\]", s)]
+        delimInd = [m.start() for m in re.finditer(r"\[USERNOTEDELIMITER\]", s)]
         # remove the delimiter
         s = s[delimInd[1] : delimInd[2]].replace("[USERNOTEDELIMITER]", "")
 
@@ -214,7 +214,7 @@ def epoc_to_type(code: int) -> Literal["onset", "offset", "unknown"]:
         return "unknown"
 
 
-def get_files(dir: str, ext: str, ignore_mac: bool = False) -> List[str]:
+def get_files(dir: str, ext: str, ignore_mac: bool = False) -> list[str]:
     """
     Get all files in a directory with a specified extension.
 
@@ -246,7 +246,7 @@ def header_to_text(header, scale):
     hhh.append("Path:\t" + header.tev_path)
     hhh.append("Start:\t" + str(header.start_time[0]))
     hhh.append("Stop:\t" + str(header.stop_time[0]))
-    hhh.append("ScaleFactor:\t{0}".format(scale))
+    hhh.append(f"ScaleFactor:\t{scale}")
     hhh.append("Stores:")
     for k in header.stores.keys():
         type_str = header.stores[k].type_str
@@ -285,7 +285,7 @@ def header_to_text(header, scale):
 
 
 def _time_filter(
-    event: Union[TDTEpoc, TDTSnip, TDTStream, TDTScalar, TDTNote],
+    event: TDTEpoc | TDTSnip | TDTStream | TDTScalar | TDTNote,
     valid_time_range: np.ndarray,
     num_ranges: int,
 ):
@@ -402,8 +402,7 @@ def _time_filter(
             if filtered_offset[0] < filtered_onset[0]:
                 if filtered_onset[0] > firstStart:
                     filtered_onset = np.concatenate([[firstStart], filtered_onset])
-            if filtered_offset[-1] > last_stop:
-                filtered_offset[-1] = last_stop
+            filtered_offset[-1] = min(filtered_offset[-1], last_stop)
 
     return (
         start_time,
@@ -423,13 +422,13 @@ def read_block(
     channel=0,
     combine=None,
     headers_only: bool = False,
-    custom_header: Union[TDTDataHeader, None] = None,
+    custom_header: TDTDataHeader | None = None,
     nodata=False,
     ranges=None,
-    speecify_store_names: List[str] = [],
+    speecify_store_names: list[str] = [],
     t1: int = 0,
     t2: int = 0,
-    evtype: List[AllowedEvtypes] = [AllowedEvtypes.ALL],
+    evtype: list[AllowedEvtypes] = [AllowedEvtypes.ALL],
     verbose=0,
     sortname="TankSort",
     export=None,
@@ -522,7 +521,7 @@ def read_block(
 
         if len(tsq_list) < 1:
             if not os.path.isdir(block_path):
-                raise Exception("block path {0} not found".format(block_path))
+                raise Exception(f"block path {block_path} not found")
 
             if "streams" in evtype:
                 warnings.warn(
@@ -532,7 +531,7 @@ def read_block(
                 )
                 return None
             else:
-                raise Exception("no TSQ file found in {0}".format(block_path))
+                raise Exception(f"no TSQ file found in {block_path}")
 
         elif len(tsq_list) > 1:
             raise Exception("multiple TSQ files found\n{0}".format(",".join(tsq_list)))
@@ -540,7 +539,7 @@ def read_block(
         try:
             tsq = open(tsq_list[0], "rb")
         except Exception:
-            raise Exception("tsq file {0} could not be opened".format(tsq_list[0]))
+            raise Exception(f"tsq file {tsq_list[0]} could not be opened")
 
         data.header.tev_path = tsq_list[0].replace(".tsq", ".tev")
 
@@ -548,9 +547,7 @@ def read_block(
         try:
             tev = open(data.header.tev_path, "rb")
         except Exception:
-            raise Exception(
-                "tev file {0} could not be opened".format(data.header.tev_path)
-            )
+            raise Exception(f"tev file {data.header.tev_path} could not be opened")
 
     # look for epoch tagged notes
     # tnt_path = data.header.tev_path.replace(".tev", ".tnt")
@@ -595,9 +592,7 @@ def read_block(
                         custom_sort_channel_map.append(ddd[:1024])
                         custom_sort_codes.append(ddd[1024:])
             else:
-                warnings.warn(
-                    "sort_id:{0} not found\n".format(sortname), Warning, stacklevel=2
-                )
+                warnings.warn(f"sort_id:{sortname} not found\n", Warning, stacklevel=2)
         except Exception:
             pass
 
@@ -760,13 +755,13 @@ def read_block(
                 # start of new note
                 this_note_text = ""
                 try:
-                    note_id = re.findall("(?<=\[)(.*?)(?=\s*\])", note_line)
+                    note_id = re.findall(r"(?<=\[)(.*?)(?=\s*\])", note_line)
                     if len(note_id):
                         note_id = note_id[0]
                     else:
                         no_buttons = True
                 except Exception:
-                    note_id = re.findall(test_str + "(.*?)(?=\s*:)", note_line)[0]
+                    note_id = re.findall(test_str + r"(.*?)(?=\s*:)", note_line)[0]
 
                 note_parts = note_line.split(" ")
                 note_time = note_parts[1]
@@ -815,7 +810,7 @@ def read_block(
 
     def get_event_data_by_name(
         name: str, event_typs: Literal["epocs", "snips", "streams", "scalars"]
-    ) -> Union[TDTEpoc, TDTSnip, TDTStream, TDTScalar, None]:
+    ) -> TDTEpoc | TDTSnip | TDTStream | TDTScalar | None:
         if event_typs == "epocs":
             for epoc in data.epocs.values():
                 if epoc.header.name == name:
@@ -855,7 +850,7 @@ def read_block(
             rem = len(heads) % 10
             if rem != 0:
                 warnings.warn(
-                    "Block did not end cleanly, removing last {0} headers".format(rem),
+                    f"Block did not end cleanly, removing last {rem} headers",
                     Warning,
                     stacklevel=2,
                 )
@@ -871,9 +866,7 @@ def read_block(
 
             if np.sum(bad_codes) > 0:
                 warnings.warn(
-                    "Bad TSQ headers were written, removing {0}, keeping {1} headers".format(
-                        sum(bad_codes), sum(good_codes)
-                    ),
+                    f"Bad TSQ headers were written, removing {sum(bad_codes)}, keeping {sum(good_codes)} headers",
                     Warning,
                     stacklevel=2,
                 )
@@ -920,7 +913,7 @@ def read_block(
                         if store.StoreName == store_code["name"]:
                             if not store.Enabled:
                                 warnings.warn(
-                                    "{0} store DISABLED".format(store.StoreName),
+                                    f"{store.StoreName} store DISABLED",
                                     Warning,
                                     stacklevel=2,
                                 )
@@ -1401,9 +1394,7 @@ def read_block(
                 max_length = max(len(ind[-1]), max_length)
             if min_length != max_length:
                 warnings.warn(
-                    "Truncating store {0} to {1} values (from {2})".format(
-                        scalar.header.name, min_length, max_length
-                    ),
+                    f"Truncating store {scalar.header.name} to {min_length} values (from {max_length})",
                     Warning,
                 )
                 ind = [ind[xx][:min_length] for xx in range(nchan)]
@@ -1447,7 +1438,7 @@ def read_block(
             # find valid indicies that match our channels
             valid_ind = [i for i, x in enumerate(snip.chan) if x in channels]
             if len(valid_ind) == 0:
-                raise Exception("channels {0} not found".format(repr(channels)))
+                raise Exception(f"channels {channels!r} not found")
             if not nodata:
                 all_offsets = snip.data[valid_ind]
             snip.chan = snip.chan[valid_ind]
@@ -1555,9 +1546,7 @@ def read_block(
         # make sure SEV files are there if they are supposed to be
         if stream.ucf == 1:
             warnings.warn(
-                "Expecting SEV files for {0} but none were found, skipping...".format(
-                    stream.header.name
-                ),
+                f"Expecting SEV files for {stream.header.name} but none were found, skipping...",
                 Warning,
             )
             continue
@@ -1586,9 +1575,7 @@ def read_block(
                 valid_ind = fc == channels[0]
                 if not np.any(valid_ind):
                     raise Exception(
-                        "channel {0} not found in store {1}".format(
-                            channels[0], stream.header.name
-                        )
+                        f"channel {channels[0]} not found in store {stream.header.name}"
                     )
                 fc = fc[valid_ind]
                 nchan = np.uint64(1)
